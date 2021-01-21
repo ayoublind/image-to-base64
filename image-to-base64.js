@@ -33,9 +33,20 @@ function isImage(urlOrImage) {
 
 function imageToBase64(urlOrImage) {
     if (validUrl(urlOrImage)) {
-        return fetch(urlOrImage).then(function (response) {
+        let type = "image/png"
+        let base64 = fetch(urlOrImage).then(function (response) {
+            let imgType = response.headers.get('content-type')
+            if (imgType) {
+                type = imgType
+            }
             return response.buffer();
         }).then(base64ToNode);
+
+        return {
+            base64,
+            type,
+            data: `data:${type};base64,${base64}`
+        }
     } else {
         return isImage(urlOrImage);
     }
